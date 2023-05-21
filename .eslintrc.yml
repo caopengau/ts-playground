@@ -1,5 +1,8 @@
 env:
   shared-node-browser: true
+  es6: true
+  node: true
+  jest: true
 extends:
   - "eslint:recommended"
   - "plugin:@typescript-eslint/eslint-recommended"
