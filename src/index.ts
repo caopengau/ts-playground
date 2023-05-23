@@ -1,28 +1,24 @@
-import { RateLimitTracker } from "./RateLimitTracker";
+import { RateLimiterStore } from "./RateLimiterStore";
 
-const makeRequest = (customerId: string) => {
-  if (!RateLimitTracker.rateLimit(customerId)) {
-    return false;
-  }
-  RateLimitTracker.increment(customerId);
-  return true;
-};
-
-const main = () => {
-  for (let i = 0; i < 10; i++) {
-    const customerId = "customer" + i;
-    const randomRequestCount = Math.ceil(Math.random() * 10);
-    let allowedCount = 0;
-    for (let j = 0; j < randomRequestCount; j++) {
-      const allowed = makeRequest(customerId);
-      if (allowed) {
-        allowedCount += 1;
+const main = async () => {
+  const fakeCustomerRequest = async (customerId: string) => {
+    setInterval(() => {
+      const requestCount = Math.floor(Math.random() * 5) + 1;
+      let successCount = 0;
+      for (let i = 0; i < requestCount; i++) {
+        if (RateLimiterStore.rateLimit(customerId)) {
+          successCount++;
+        }
       }
-    }
+      console.log(`Customer ${customerId} made ${requestCount} requests, ${successCount} succeeded.`);
+      console.log("");
+    }, 3000);
+  };
 
-    console.log(`Customer ${customerId} made ${allowedCount}/${randomRequestCount} requests`);
-    console.log("---------------");
+  const customerIds = ["c1"];
+  for (const customerId of customerIds) {
+    await fakeCustomerRequest(customerId);
   }
 };
 
-main();
+void main();
